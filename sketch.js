@@ -1,76 +1,70 @@
 var balloon;
-var BackgroundImg;
-var balloon,balloonImg1,balloonImg2,balloonImg3;
-var database;
-var position;
+var database, balloonposition;
 
 function preload(){
-  BackgroundImg = loadImage("images/Hot Air Ballon-01.png");
-  balloonImg= loadAnimation("images/Hot Air Ballon-02.png", "images/Hot Air Ballon-03.png", "images/Hot Air Ballon-04.png");
- 
+  database = firebase.database();
+backgroundImg = loadImage("Hot Air Ballon-01.png");
+hotairballoon = loadAnimation("Hot Air Ballon-02.png", "Hot Air Ballon-03.png", "Hot Air Ballon-04.png")
+balloonImg1 = loadImage("Hot Air Ballon-02.png");
+balloonImg2 = loadImage("Hot Air Ballon-03.png");
+balloonImg3 = loadImage("Hot Air Ballon-04.png");
+var ballposition = database.ref("Balloon/Position");
+ballposition.on("value", readPosition, showError);
 }
 
 function setup() {
-  createCanvas(800,700);
-
-  database= firebase.database();
-  console.log(database);
-
- balloon= createSprite(250, 300, 50, 50);
- balloon.addAnimation("Hot Air Ballon-02.png",balloonImg); 
- balloon.scale=0.5;
-
- var balloonPosition = database.ref('balloon/position');
- balloonPosition.on("value",readPosition,showError)
+  createCanvas(1000,641);
+  balloon = createSprite(400, 300, 50, 50);
+  balloon.addAnimation("flying",hotairballoon);
+  balloon.scale = 0.7;
 }
 
-
 function draw() {
-  background(BackgroundImg);
+  background(backgroundImg); 
+  strokeWeight(2);
+  stroke("lightgreen");
+  fill("blue");
+  textSize(20);
+  text("Use the 4 arrow keys to move the Hot Air Balloon", 30, 30);
 
-
- if(keyDown(LEFT_ARROW)){
-  updatePosition(-10,0)
-    balloon.x=balloon.x-10
-   
+  if(keyDown(LEFT_ARROW)){
+  writePosition(-10, 0);
+  balloon.addAnimation("hotairballoon", balloonImg1);
   }
- 
+
   if(keyDown(RIGHT_ARROW)){
-    updatePosition(+10,0)
-    balloon.x=balloon.x+10
-   
+    writePosition(10, 0);
+    balloon.addAnimation("hotairballoon", balloonImg2);                                                              
   }
- 
+
   if(keyDown(UP_ARROW)){
-    updatePosition(0,-10)
-    balloon.y=balloon.y-10
-    balloon.scale=balloon.scale-0.01
+    writePosition(0, -10);
+    balloon.addAnimation("hotairballoon", balloonImg3); 
+    balloon.scale = balloon.scale-0.02;                                                       
   }
- 
+
   if(keyDown(DOWN_ARROW)){
-    updatePosition(0,+10)
-    balloon.y=balloon.y+10
-  
-    balloon.scale=balloon.scale+0.01
+    writePosition(0, 10);
+    balloon.addAnimation("hotairballoon", balloonImg1);     
+    balloon.scale = balloon.scale+0.02;                                                           
   }
 
   drawSprites();
 }
 
-function updatePosition(x,y){
-database.ref('balloon/position').set({
-  'x': balloon.x + x,
-  'y': balloon.y + y
-})
-
+function readPosition(data){
+position = data.val();
+balloon.x = position.x;
+balloon.y = position.y;
 }
 
-function readPosition(data){
-  position=data.val();
-  balloon.x=position.x;
-  balloon.y=position.y;
+function writePosition(x, y){
+database.ref('Balloon/Position').set({
+  'x': balloon.x + x,
+  'y': balloon.y + y,
+})
 }
 
 function showError(){
-console.log("Error in writing to the database");
+  console.log("error");
 }

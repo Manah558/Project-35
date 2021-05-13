@@ -2,8 +2,8 @@ var balloon,balloonImg;
 var background,backgroundImg;
 
 function preload() {
-  balloonImg = loadImage("hotairballoon1.png");
-  backgroundImg = loadImage("cityImage.png");
+  balloonImg = loadImage("Hot Air Balloon-02.png","Hot Air Balloon-03.png","Hot Air Balloon-04.png");
+  backgroundImg = loadImageHot("Hot Air Balloon-01.png");
   
 
 }
